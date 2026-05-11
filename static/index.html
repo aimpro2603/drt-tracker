@@ -6,331 +6,91 @@
 <title>DRT Arrivals</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #ffffff;
-    --bg2: #f4f4f2;
-    --bg3: #ebebea;
-    --text: #1a1a18;
-    --text2: #5f5e5a;
-    --text3: #888780;
-    --border: rgba(0,0,0,0.12);
-    --border2: rgba(0,0,0,0.22);
-    --success: #3b6d11;
-    --success-bg: #eaf3de;
-    --warn: #854f0b;
-    --warn-bg: #faeeda;
-    --danger: #a32d2d;
-    --danger-bg: #fcebeb;
-    --radius: 8px;
-    --radius-lg: 12px;
+    --bg: #ffffff; --bg2: #f4f4f2; --bg3: #ebebea;
+    --text: #1a1a18; --text2: #5f5e5a; --text3: #888780;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --success: #3b6d11; --success-bg: #eaf3de;
+    --warn: #854f0b; --warn-bg: #faeeda;
+    --danger: #a32d2d; --danger-bg: #fcebeb;
+    --accent: #1a6b3c; --accent-bg: #e6f4ec;
+    --radius: 8px; --radius-lg: 12px;
   }
-
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #1e1e1c;
-      --bg2: #2a2a28;
-      --bg3: #333330;
-      --text: #f0efe8;
-      --text2: #b4b2a9;
-      --text3: #888780;
-      --border: rgba(255,255,255,0.1);
-      --border2: rgba(255,255,255,0.2);
-      --success: #c0dd97;
-      --success-bg: #173404;
-      --warn: #FAC775;
-      --warn-bg: #412402;
-      --danger: #f09595;
-      --danger-bg: #501313;
+      --bg: #1e1e1c; --bg2: #2a2a28; --bg3: #333330;
+      --text: #f0efe8; --text2: #b4b2a9; --text3: #888780;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+      --success: #c0dd97; --success-bg: #173404;
+      --warn: #FAC775; --warn-bg: #412402;
+      --danger: #f09595; --danger-bg: #501313;
+      --accent: #6fcf97; --accent-bg: #0d2e1a;
     }
   }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: var(--bg2);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0;
-  }
-
-  .app {
-    max-width: 480px;
-    margin: 0 auto;
-    background: var(--bg);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    padding: 20px 16px 12px;
-    border-bottom: 0.5px solid var(--border);
-  }
-
-  header h1 {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
-
-  header p {
-    font-size: 12px;
-    color: var(--text3);
-  }
-
-  .search-bar {
-    padding: 12px 16px;
-    display: flex;
-    gap: 8px;
-    border-bottom: 0.5px solid var(--border);
-    background: var(--bg);
-  }
-
-  .search-bar input {
-    flex: 1;
-    height: 40px;
-    padding: 0 12px;
-    border: 0.5px solid var(--border2);
-    border-radius: var(--radius);
-    background: var(--bg2);
-    color: var(--text);
-    font-size: 15px;
-  }
-
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
+  .app { max-width: 480px; margin: 0 auto; background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; }
+  header { padding: 16px 16px 0; }
+  header h1 { font-size: 18px; font-weight: 600; margin-bottom: 2px; }
+  header p { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
+  .tabs { display: flex; border-bottom: 0.5px solid var(--border); }
+  .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 500; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .search-bar { padding: 12px 16px; display: flex; gap: 8px; border-bottom: 0.5px solid var(--border); }
+  .search-bar input { flex: 1; height: 40px; padding: 0 12px; border: 0.5px solid var(--border2); border-radius: var(--radius); background: var(--bg2); color: var(--text); font-size: 15px; }
   .search-bar input:focus { outline: none; border-color: var(--text3); }
-
-  .search-bar button {
-    height: 40px;
-    padding: 0 16px;
-    border: 0.5px solid var(--border2);
-    border-radius: var(--radius);
-    background: var(--bg);
-    color: var(--text);
-    font-size: 14px;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .search-bar button:active { opacity: 0.7; }
-
-  .breadcrumb {
-    padding: 8px 16px;
-    font-size: 12px;
-    color: var(--text3);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
-    border-bottom: 0.5px solid var(--border);
-    min-height: 34px;
-    background: var(--bg2);
-  }
-
-  .breadcrumb a {
-    color: var(--text2);
-    cursor: pointer;
-    text-decoration: underline;
-  }
-
+  .search-bar button { height: 40px; padding: 0 16px; border: none; border-radius: var(--radius); background: var(--accent); color: #fff; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .search-bar button:active { opacity: 0.8; }
+  .breadcrumb { padding: 8px 16px; font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 4px; flex-wrap: wrap; border-bottom: 0.5px solid var(--border); min-height: 34px; background: var(--bg2); }
   .breadcrumb span { color: var(--text); font-weight: 500; }
-  .breadcrumb .sep { color: var(--text3); }
-
+  .breadcrumb a { color: var(--text2); cursor: pointer; text-decoration: underline; }
   .content { flex: 1; padding: 12px 16px; }
-
-  .section-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text3);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 8px;
-  }
-
-  .card {
-    background: var(--bg);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
-
-  .card-header {
-    padding: 12px 14px 10px;
-    border-bottom: 0.5px solid var(--border);
-  }
-
-  .card-header h2 {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .card-header p {
-    font-size: 12px;
-    color: var(--text3);
-    margin-top: 2px;
-  }
-
-  .list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 14px;
-    border-bottom: 0.5px solid var(--border);
-    cursor: pointer;
-  }
-
+  .section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 12px; overflow: hidden; }
+  .card-header { padding: 12px 14px 10px; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
+  .card-header-left h2 { font-size: 14px; font-weight: 500; }
+  .card-header-left p { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .fav-btn { background: none; border: none; font-size: 22px; cursor: pointer; padding: 0 0 0 8px; line-height: 1; flex-shrink: 0; }
+  .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 0.5px solid var(--border); cursor: pointer; }
   .list-item:last-child { border-bottom: none; }
   .list-item:active { background: var(--bg2); }
-
-  .list-item-name { font-size: 14px; color: var(--text); }
-  .list-item-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .list-item-name { font-size: 14px; }
   .list-item-arrow { color: var(--text3); font-size: 18px; flex-shrink: 0; margin-left: 8px; }
-
-  .dir-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 12px;
-  }
-
-  .dir-tile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 18px 12px;
-    background: var(--bg2);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    cursor: pointer;
-  }
-
+  .dir-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; }
+  .dir-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 18px 12px; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer; }
   .dir-tile:active { background: var(--bg3); }
-
-  .dir-arrow {
-    font-size: 24px;
-    color: var(--text2);
-    line-height: 1;
-  }
-
-  .dir-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .dir-dest {
-    font-size: 11px;
-    color: var(--text3);
-    text-align: center;
-  }
-
-  .arrival-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 14px;
-    border-bottom: 0.5px solid var(--border);
-  }
-
+  .dir-arrow { font-size: 24px; color: var(--text2); }
+  .dir-label { font-size: 13px; font-weight: 500; }
+  .dir-dest { font-size: 11px; color: var(--text3); text-align: center; }
+  .arrival-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 0.5px solid var(--border); }
   .arrival-row:last-child { border-bottom: none; }
-
-  .arrival-info { flex: 1; }
-  .arrival-dest { font-size: 13px; color: var(--text); }
+  .arrival-dest { font-size: 13px; }
   .arrival-detail { font-size: 12px; color: var(--text3); margin-top: 2px; }
-
-  .arrival-time {
-    font-size: 16px;
-    font-weight: 500;
-    flex-shrink: 0;
-    margin-left: 12px;
-  }
-
-  .t-now   { color: var(--danger); }
-  .t-soon  { color: var(--warn); }
-  .t-ok    { color: var(--success); }
-  .t-later { color: var(--text3); }
-
-  .badge {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 500;
-    padding: 2px 6px;
-    border-radius: 99px;
-    background: var(--success-bg);
-    color: var(--success);
-    margin-left: 6px;
-    vertical-align: middle;
-  }
-
-  .badge-sched {
-    background: var(--bg2);
-    color: var(--text3);
-  }
-
-  .empty {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text3);
-    font-size: 14px;
-  }
-
+  .arrival-time { font-size: 16px; font-weight: 600; flex-shrink: 0; margin-left: 12px; }
+  .t-now { color: var(--danger); } .t-soon { color: var(--warn); } .t-ok { color: var(--success); } .t-later { color: var(--text3); }
+  .badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 99px; margin-left: 6px; vertical-align: middle; }
+  .badge-live { background: var(--success-bg); color: var(--success); }
+  .badge-sched { background: var(--bg2); color: var(--text3); }
+  .notif-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--accent-bg); border-top: 0.5px solid var(--border); font-size: 13px; color: var(--text2); }
+  .notif-bar button { margin-left: auto; background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .progress-bar { height: 3px; background: var(--border); }
+  .progress-fill { height: 100%; background: var(--accent); transition: width 1s linear; }
+  .refresh-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; font-size: 12px; color: var(--text3); background: var(--bg2); border-top: 0.5px solid var(--border); }
+  .refresh-bar button { background: none; border: 0.5px solid var(--border2); border-radius: 6px; padding: 4px 10px; font-size: 12px; color: var(--text2); cursor: pointer; }
+  .fav-item { display: flex; align-items: center; padding: 12px 14px; border-bottom: 0.5px solid var(--border); cursor: pointer; gap: 12px; }
+  .fav-item:last-child { border-bottom: none; }
+  .fav-item:active { background: var(--bg2); }
+  .fav-icon { font-size: 20px; flex-shrink: 0; }
+  .fav-info { flex: 1; }
+  .fav-name { font-size: 14px; font-weight: 500; }
+  .fav-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .fav-delete { background: none; border: none; font-size: 18px; color: var(--text3); cursor: pointer; padding: 4px; flex-shrink: 0; }
+  .empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; line-height: 1.7; }
   .empty .icon { font-size: 36px; margin-bottom: 8px; }
-
-  .spinner-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 20px 0;
-    color: var(--text3);
-    font-size: 13px;
-  }
-
-  .spinner {
-    width: 16px; height: 16px;
-    border: 2px solid var(--border2);
-    border-top-color: var(--text3);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
-  }
-
+  .spinner-wrap { display: flex; align-items: center; gap: 10px; padding: 20px 0; color: var(--text3); font-size: 13px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--border2); border-top-color: var(--text3); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .err {
-    background: var(--danger-bg);
-    color: var(--danger);
-    border-radius: var(--radius);
-    padding: 12px;
-    font-size: 13px;
-  }
-
-  .ext-link {
-    display: block;
-    text-align: center;
-    font-size: 12px;
-    color: var(--text3);
-    padding: 10px;
-    text-decoration: none;
-  }
-
-  .refresh-btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background: none;
-    border: none;
-    border-top: 0.5px solid var(--border);
-    color: var(--text3);
-    font-size: 13px;
-    cursor: pointer;
-    text-align: center;
-  }
-
-  .refresh-btn:active { background: var(--bg2); }
+  .err { background: var(--danger-bg); color: var(--danger); border-radius: var(--radius); padding: 12px; font-size: 13px; }
+  .ext-link { display: block; text-align: center; font-size: 12px; color: var(--text3); padding: 10px; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -338,229 +98,253 @@
   <header>
     <h1>🚌 DRT Arrivals</h1>
     <p>Durham Region Transit · transsee.ca</p>
+    <div class="tabs">
+      <div class="tab active" id="tab-search" onclick="switchTab('search')">Search</div>
+      <div class="tab" id="tab-favs" onclick="switchTab('favs')">⭐ Favourites</div>
+    </div>
   </header>
-
-  <div class="search-bar">
-    <input id="route-input" type="text" inputmode="numeric" placeholder="Route number (e.g. 900, 302)" />
-    <button onclick="searchRoute()">Search</button>
-  </div>
-
-  <div class="breadcrumb" id="breadcrumb" style="display:none;"></div>
-
-  <div class="content" id="content">
-    <div class="empty">
-      <div class="icon">🚌</div>
-      Enter a route number to get started
+  <div id="search-panel">
+    <div class="search-bar">
+      <input id="route-input" type="text" inputmode="numeric" placeholder="Route number (e.g. 900, 905)" />
+      <button onclick="searchRoute()">Search</button>
+    </div>
+    <div class="breadcrumb" id="breadcrumb" style="display:none;"></div>
+    <div class="content" id="content">
+      <div class="empty"><div class="icon">🚌</div>Enter a route number to get started</div>
     </div>
   </div>
+  <div id="favs-panel" style="display:none;">
+    <div class="content" id="favs-content"></div>
+  </div>
 </div>
-
 <script>
   const API = "/api";
   const TRANSSEE = "https://transsee.ca";
-  let state = { route: null, routeName: null, direction: null };
+  const REFRESH_INTERVAL = 30;
+  let state = { route: null, direction: null, currentStop: null, _directions: [], _stops: [] };
+  let refreshTimer = null;
+  let refreshCountdown = REFRESH_INTERVAL;
+  let notifPermission = (typeof Notification !== 'undefined') ? Notification.permission : 'denied';
+  let notifiedKeys = new Set();
 
-  const dirArrows = { northbound:"↑", southbound:"↓", eastbound:"→", westbound:"←", "all stops":"·" };
-
-  function setContent(html) { document.getElementById("content").innerHTML = html; }
-  function loading(msg) {
-    setContent(`<div class="spinner-wrap"><div class="spinner"></div>${msg}</div>`);
+  // ── Tabs ──────────────────────────────────────────────────────────────────
+  function switchTab(tab) {
+    document.getElementById('tab-search').className = 'tab' + (tab === 'search' ? ' active' : '');
+    document.getElementById('tab-favs').className = 'tab' + (tab === 'favs' ? ' active' : '');
+    document.getElementById('search-panel').style.display = tab === 'search' ? '' : 'none';
+    document.getElementById('favs-panel').style.display = tab === 'favs' ? '' : 'none';
+    if (tab === 'favs') renderFavs();
   }
 
+  // ── Favourites ────────────────────────────────────────────────────────────
+  function getFavs() { try { return JSON.parse(localStorage.getItem('drt-favs') || '[]'); } catch { return []; } }
+  function saveFavs(f) { localStorage.setItem('drt-favs', JSON.stringify(f)); }
+  function isFav(key) { return getFavs().some(f => f.key === key); }
+
+  function toggleFav(stop, route, dirLabel) {
+    let favs = getFavs();
+    const idx = favs.findIndex(f => f.key === stop.key);
+    if (idx >= 0) { favs.splice(idx, 1); } else { favs.push({ key: stop.key, name: stop.name, route, dirLabel }); }
+    saveFavs(favs);
+    return idx < 0;
+  }
+
+  function renderFavs() {
+    const favs = getFavs();
+    const el = document.getElementById('favs-content');
+    if (!favs.length) {
+      el.innerHTML = '<div class="empty"><div class="icon">⭐</div>No favourites yet.<br>Search for a stop and tap ☆ to save it here.</div>'; return;
+    }
+    el.innerHTML = '<div class="section-label" style="margin-top:4px;">Saved stops</div><div class="card">' +
+      favs.map((f, i) => `<div class="fav-item" onclick="loadFav(${i})">
+        <div class="fav-icon">📍</div>
+        <div class="fav-info"><div class="fav-name">${f.name}</div><div class="fav-sub">Route ${f.route} · ${f.dirLabel}</div></div>
+        <button class="fav-delete" onclick="deleteFav(event,${i})">✕</button>
+      </div>`).join('') + '</div>';
+  }
+
+  function deleteFav(e, idx) { e.stopPropagation(); const f = getFavs(); f.splice(idx,1); saveFavs(f); renderFavs(); }
+
+  function loadFav(idx) {
+    const fav = getFavs()[idx]; if (!fav) return;
+    switchTab('search');
+    document.getElementById('route-input').value = fav.route;
+    state.route = fav.route;
+    state.direction = { label: fav.dirLabel };
+    state.currentStop = { key: fav.key, name: fav.name };
+    setBreadcrumb([`<a onclick="searchRoute()">Route ${fav.route}</a>`, `<span>${fav.name}</span>`]);
+    loadArrivals({ key: fav.key, name: fav.name });
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function setContent(html) { document.getElementById('content').innerHTML = html; }
+  function loading(msg) { setContent('<div class="spinner-wrap"><div class="spinner"></div>' + msg + '</div>'); }
   function setBreadcrumb(parts) {
-    const el = document.getElementById("breadcrumb");
-    if (!parts.length) { el.style.display = "none"; return; }
-    el.style.display = "flex";
-    el.innerHTML = parts.map((p, i) =>
-      i < parts.length - 1
-        ? `${p} <span class="sep">›</span>`
-        : p
-    ).join(" ");
+    const el = document.getElementById('breadcrumb');
+    el.style.display = parts.length ? 'flex' : 'none';
+    el.innerHTML = parts.map((p,i) => i < parts.length-1 ? p+' <span style="color:var(--text3)">›</span>' : p).join(' ');
   }
-
   async function apiFetch(url) {
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    if (data.error) throw new Error(data.error);
-    return data;
+    const r = await fetch(url); if (!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json(); if (d.error) throw new Error(d.error); return d;
   }
 
-  // ── Step 1: search route ──────────────────────────────────────────────────
-
-  document.getElementById("route-input").addEventListener("keydown", e => {
-    if (e.key === "Enter") searchRoute();
-  });
+  // ── Search ────────────────────────────────────────────────────────────────
+  document.getElementById('route-input').addEventListener('keydown', e => { if (e.key==='Enter') searchRoute(); });
 
   async function searchRoute() {
-    const r = document.getElementById("route-input").value.trim();
-    if (!r) return;
-    state = { route: r, routeName: null, direction: null };
+    stopRefresh();
+    const r = document.getElementById('route-input').value.trim(); if (!r) return;
+    state = { route: r, direction: null, currentStop: null, _directions: [], _stops: [] };
     setBreadcrumb([`<span>Route ${r}</span>`]);
-    loading(`Loading directions for route ${r}…`);
-    try {
-      const data = await apiFetch(`${API}/routes/${encodeURIComponent(r)}/stops`);
-      showDirections(data);
-    } catch (e) {
-      setContent(`<div class="err">Could not load route ${r}. Check the number and try again.<br><small>${e.message}</small></div>`);
-    }
+    loading('Loading directions for route '+r+'…');
+    try { const data = await apiFetch(API+'/routes/'+encodeURIComponent(r)+'/stops'); showDirections(data); }
+    catch(e) { setContent('<div class="err">Could not load route '+r+'. Check the number and try again.<br><small>'+e.message+'</small></div>'); }
   }
 
-  // ── Step 2: pick direction ────────────────────────────────────────────────
-
+  // ── Directions ────────────────────────────────────────────────────────────
   function showDirections(data) {
-    if (!data.directions || !data.directions.length) {
-      setContent(`<div class="err">No stops found for route ${state.route}.</div>`);
-      return;
-    }
-
-    const tiles = data.directions.map((d, i) => {
-      const arrow = dirArrows[d.label.toLowerCase()] || "·";
-      const destText = d.stops.length ? `→ ${d.stops[d.stops.length - 1].name}` : "";
-      return `<div class="dir-tile" onclick="pickDirection(${i})">
-        <div class="dir-arrow">${arrow}</div>
-        <div class="dir-label">${d.label}</div>
-        <div class="dir-dest">${destText}</div>
-      </div>`;
-    }).join("");
-
-    // Store directions on state so we don't re-fetch
+    if (!data.directions || !data.directions.length) { setContent('<div class="err">No stops found for route '+state.route+'.</div>'); return; }
     state._directions = data.directions;
-
-    setContent(`
-      <div class="section-label">Choose direction</div>
-      <div class="card">
-        <div class="card-header">
-          <h2>Route ${state.route}</h2>
-          <p>Which way are you heading?</p>
-        </div>
-        <div class="dir-grid">${tiles}</div>
-      </div>
-      <a class="ext-link" href="${TRANSSEE}/stoplist?a=durham&r=${state.route}" target="_blank">
-        View on transsee.ca ↗
-      </a>
-    `);
+    const tiles = data.directions.map((d,i) => {
+      const parts = d.label.split('→');
+      return '<div class="dir-tile" onclick="pickDirection('+i+')">' +
+        '<div class="dir-arrow">'+(d.arrow||'·')+'</div>' +
+        '<div class="dir-label">'+parts[0].trim()+'</div>' +
+        '<div class="dir-dest">'+(parts[1] ? '→ '+parts[1].trim() : '')+'</div>' +
+        '</div>';
+    }).join('');
+    setContent('<div class="section-label">Choose direction</div><div class="card">' +
+      '<div class="card-header"><div class="card-header-left"><h2>Route '+state.route+'</h2><p>Which way are you heading?</p></div></div>' +
+      '<div class="dir-grid">'+tiles+'</div></div>' +
+      '<a class="ext-link" href="'+TRANSSEE+'/stoplist?a=durham&r='+state.route+'" target="_blank">View on transsee.ca ↗</a>');
   }
 
   function pickDirection(idx) {
-    const dir = state._directions[idx];
-    state.direction = dir;
-    setBreadcrumb([
-      `<a onclick="backToDirections()">Route ${state.route}</a>`,
-      `<span>${dir.label}</span>`
-    ]);
+    const dir = state._directions[idx]; state.direction = dir;
+    setBreadcrumb([`<a onclick="backToDirections()">Route ${state.route}</a>`, '<span>'+dir.label.split('→')[0].trim()+'</span>']);
     showStops(dir);
   }
 
-  function backToDirections() {
-    state.direction = null;
-    setBreadcrumb([`<span>Route ${state.route}</span>`]);
-    showDirections({ directions: state._directions });
-  }
+  function backToDirections() { stopRefresh(); state.direction = null; setBreadcrumb([`<span>Route ${state.route}</span>`]); showDirections({directions: state._directions}); }
 
-  // ── Step 3: pick stop ─────────────────────────────────────────────────────
-
+  // ── Stops ─────────────────────────────────────────────────────────────────
   function showStops(dir) {
-    if (!dir.stops.length) {
-      setContent(`<div class="err">No stops found for this direction.</div>`);
-      return;
-    }
-
-    const items = dir.stops.map((s, i) =>
-      `<div class="list-item" onclick="pickStop(${i})">
-        <div>
-          <div class="list-item-name">${s.name}</div>
-        </div>
-        <div class="list-item-arrow">›</div>
-      </div>`
-    ).join("");
-
     state._stops = dir.stops;
-
-    const destStop = dir.stops[dir.stops.length - 1].name;
-    setContent(`
-      <div class="section-label">Choose stop</div>
-      <div class="card">
-        <div class="card-header">
-          <h2>${dir.label} → ${destStop}</h2>
-          <p>${dir.stops.length} stops · tap to see arrivals</p>
-        </div>
-        ${items}
-      </div>
-    `);
+    const items = dir.stops.map((s,i) =>
+      '<div class="list-item" onclick="pickStop('+i+')"><div class="list-item-name">'+s.name+'</div><div class="list-item-arrow">›</div></div>'
+    ).join('');
+    setContent('<div class="section-label">Choose stop</div><div class="card">' +
+      '<div class="card-header"><div class="card-header-left"><h2>'+dir.label+'</h2><p>'+dir.stops.length+' stops</p></div></div>' +
+      items+'</div>');
   }
 
   function pickStop(idx) {
-    const stop = state._stops[idx];
-    setBreadcrumb([
-      `<a onclick="backToDirections()">Route ${state.route}</a>`,
-      `<a onclick="backToStops()">${state.direction.label}</a>`,
-      `<span>${stop.name}</span>`
-    ]);
+    const stop = state._stops[idx]; state.currentStop = stop;
+    const d = state.direction?.label.split('→')[0].trim()||'';
+    setBreadcrumb([`<a onclick="backToDirections()">Route ${state.route}</a>`, `<a onclick="backToStops()">${d}</a>`, '<span>'+stop.name+'</span>']);
     loadArrivals(stop);
   }
 
-  function backToStops() {
-    setBreadcrumb([
-      `<a onclick="backToDirections()">Route ${state.route}</a>`,
-      `<span>${state.direction.label}</span>`
-    ]);
-    showStops(state.direction);
-  }
+  function backToStops() { stopRefresh(); setBreadcrumb([`<a onclick="backToDirections()">Route ${state.route}</a>`, '<span>'+(state.direction?.label.split('→')[0].trim()||'')+'</span>']); showStops(state.direction); }
 
-  // ── Step 4: show arrivals ─────────────────────────────────────────────────
-
+  // ── Arrivals ──────────────────────────────────────────────────────────────
   async function loadArrivals(stop) {
-    state._currentStop = stop;
-    loading(`Loading arrivals for ${stop.name}…`);
+    stopRefresh(); state.currentStop = stop;
+    loading('Loading arrivals for '+stop.name+'…');
     try {
-      const data = await apiFetch(`${API}/arrivals?key=${encodeURIComponent(stop.key)}`);
+      const data = await apiFetch(API+'/arrivals?key='+encodeURIComponent(stop.key));
       showArrivals(data, stop);
-    } catch (e) {
-      setContent(`<div class="err">Could not load arrivals.<br><small>${e.message}</small></div>`);
-    }
+      checkNotifications(data.arrivals, stop);
+      startRefresh(stop);
+    } catch(e) { setContent('<div class="err">Could not load arrivals.<br><small>'+e.message+'</small></div>'); }
   }
 
   function showArrivals(data, stop) {
-    const transseeUrl = `${TRANSSEE}/predict?s=${stop.key}`;
+    const favved = isFav(stop.key);
+    const transseeUrl = TRANSSEE+'/predict?s='+stop.key;
+    const dirShort = state.direction?.label.split('→')[0].trim()||'';
 
-    let rows = "";
+    let rows = '';
     if (!data.arrivals || !data.arrivals.length) {
-      rows = `<div class="arrival-row"><div class="arrival-info"><div class="arrival-dest">No arrivals found</div><div class="arrival-detail">Service may not be running right now</div></div></div>`;
+      rows = '<div class="arrival-row"><div><div class="arrival-dest">No arrivals found</div><div class="arrival-detail">Service may not be running right now</div></div></div>';
     } else {
       rows = data.arrivals.map(a => {
         const mins = a.minutes ?? 0;
-        const cls = mins <= 1 ? "t-now" : mins <= 5 ? "t-soon" : mins <= 15 ? "t-ok" : "t-later";
-        const timeLabel = mins <= 1 ? "Now" : `${a.minutes_range || mins} min`;
-        const detail = [
-          a.time ? `at ${a.time}` : "",
-          a.vehicle ? `Bus #${a.vehicle}` : "",
-        ].filter(Boolean).join(" · ");
-        const badge = a.scheduled
-          ? `<span class="badge badge-sched">Scheduled</span>`
-          : `<span class="badge">Live</span>`;
-        return `<div class="arrival-row">
-          <div class="arrival-info">
-            <div class="arrival-dest">${a.destination || state.direction?.label || ""} ${badge}</div>
-            <div class="arrival-detail">${detail}</div>
-          </div>
-          <div class="arrival-time ${cls}">${timeLabel}</div>
-        </div>`;
-      }).join("");
+        const cls = mins<=1?'t-now':mins<=5?'t-soon':mins<=15?'t-ok':'t-later';
+        const label = mins<=1?'Now':(a.minutes_range||mins)+' min';
+        const detail = [a.time?'at '+a.time:'', a.vehicle?'Bus #'+a.vehicle:''].filter(Boolean).join(' · ');
+        const badge = a.scheduled ? '<span class="badge badge-sched">Scheduled</span>' : '<span class="badge badge-live">Live</span>';
+        return '<div class="arrival-row"><div><div class="arrival-dest">'+(a.destination||dirShort)+' '+badge+'</div><div class="arrival-detail">'+detail+'</div></div><div class="arrival-time '+cls+'">'+label+'</div></div>';
+      }).join('');
     }
 
-    setContent(`
-      <div class="section-label">Live arrivals</div>
-      <div class="card">
-        <div class="card-header">
-          <h2>📍 ${stop.name}</h2>
-          <p>Route ${state.route} · ${state.direction?.label || ""}</p>
-        </div>
-        ${rows}
-        <button class="refresh-btn" onclick="loadArrivals(state._currentStop)">↻ Refresh</button>
-      </div>
-      <a class="ext-link" href="${transseeUrl}" target="_blank">View on transsee.ca ↗</a>
-    `);
+    let notifBanner = '';
+    if (notifPermission==='default') {
+      notifBanner = '<div class="notif-bar">🔔 Get notified when your bus is close<button onclick="requestNotifPermission()">Enable</button></div>';
+    } else if (notifPermission==='granted') {
+      notifBanner = '<div class="notif-bar">🔔 Alerts on — notifying when bus is ≤ 5 min away</div>';
+    }
+
+    setContent(
+      '<div class="section-label">Live arrivals</div>' +
+      '<div class="card">' +
+        '<div class="card-header"><div class="card-header-left"><h2>📍 '+stop.name+'</h2><p>Route '+state.route+' · '+dirShort+'</p></div>' +
+        '<button class="fav-btn" onclick="handleFav()" title="'+(favved?'Remove':'Add')+' favourite">'+(favved?'⭐':'☆')+'</button></div>' +
+        rows +
+        notifBanner +
+        '<div class="progress-bar"><div class="progress-fill" id="progress" style="width:100%"></div></div>' +
+        '<div class="refresh-bar"><span id="refresh-label">Refreshes in '+REFRESH_INTERVAL+'s</span><button onclick="loadArrivals(state.currentStop)">↻ Refresh now</button></div>' +
+      '</div>' +
+      '<a class="ext-link" href="'+transseeUrl+'" target="_blank">View on transsee.ca ↗</a>'
+    );
+  }
+
+  function handleFav() {
+    if (!state.currentStop) return;
+    toggleFav(state.currentStop, state.route, state.direction?.label.split('→')[0].trim()||'');
+    loadArrivals(state.currentStop);
+  }
+
+  // ── Auto-refresh ──────────────────────────────────────────────────────────
+  function startRefresh(stop) {
+    stopRefresh(); refreshCountdown = REFRESH_INTERVAL;
+    refreshTimer = setInterval(() => {
+      refreshCountdown--;
+      const lbl = document.getElementById('refresh-label');
+      const bar = document.getElementById('progress');
+      if (lbl) lbl.textContent = 'Refreshes in '+refreshCountdown+'s';
+      if (bar) bar.style.width = ((refreshCountdown/REFRESH_INTERVAL)*100)+'%';
+      if (refreshCountdown <= 0) loadArrivals(stop);
+    }, 1000);
+  }
+
+  function stopRefresh() { if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; } }
+
+  // ── Push notifications ────────────────────────────────────────────────────
+  async function requestNotifPermission() {
+    if (typeof Notification === 'undefined') { alert('Notifications are not supported in this browser.'); return; }
+    const result = await Notification.requestPermission();
+    notifPermission = result;
+    if (result === 'granted' && state.currentStop) loadArrivals(state.currentStop);
+  }
+
+  function checkNotifications(arrivals, stop) {
+    if (notifPermission !== 'granted' || !arrivals) return;
+    arrivals.forEach(a => {
+      const mins = a.minutes ?? 99;
+      if (mins <= 5) {
+        const key = stop.key + '-' + a.time;
+        if (!notifiedKeys.has(key)) {
+          notifiedKeys.add(key);
+          new Notification('🚌 Route ' + state.route + (mins<=1?' arriving now':' in '+mins+' min'), {
+            body: 'at ' + stop.name + (a.time ? ' at ' + a.time : ''),
+            icon: '/favicon.ico'
+          });
+          setTimeout(() => notifiedKeys.delete(key), 10*60*1000);
+        }
+      }
+    });
   }
 </script>
 </body>
