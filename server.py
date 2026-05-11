@@ -157,8 +157,16 @@ def get_stops(route):
 def get_arrivals():
     """
     Fetch live arrival predictions for a stop.
-    Query param: key=durham.900.93450:1_0
-    Response: { stop, arrivals: [{route, destination, minutes, time, vehicle, scheduled}] }
+    Query param: key=durham.900.3589_0
+    Returns up to 3 next arrivals.
+
+    TransSee renders each prediction as a <div class=divp id="ROUTE_STOP_DIR_N">
+    where N is the arrival index (1, 2, 3...).
+    The div contains text like:
+      "1: At Stop ... Vehicle 8603"
+      "2: 14 Min at 10:58PM ... Vehicle 8604"
+      "3: 44 Min at 11:28PM ... Vehicle 8601"
+    The stop name and destination come from the <b> tag above the divp blocks.
     """
     key = request.args.get("key", "")
     if not key:
@@ -166,51 +174,59 @@ def get_arrivals():
     try:
         soup = fetch(f"{BASE}/predict?s={key}")
 
-        # Page title = stop name
-        h1 = soup.find("h1")
-        stop_name = h1.get_text(strip=True) if h1 else key
+        # Stop name from <title>: "Centennial Circle - 900-PULSE 900 - Durham..."
+        title = soup.find("title")
+        stop_name = key
+        destination = ""
+        if title:
+            parts = title.get_text().split(" - ")
+            if parts:
+                stop_name = parts[0].strip()
+
+        # Destination from bold tag: "900-PULSE 900 at Centennial Circle going →Ritson"
+        bold = soup.find("b")
+        if bold:
+            bold_text = bold.get_text(strip=True)
+            dest_match = re.search(r"going\s*[→←↑↓]?\s*(.+)", bold_text)
+            if dest_match:
+                destination = dest_match.group(1).strip()
 
         arrivals = []
 
-        # TransSee renders predictions as numbered list items like:
-        # "1: 4 - 7 Mins at 5:25:14PM. Vehicle 8575 ↑B - Destination"
-        # We look for <li> or <div> elements containing "Min" and a time
-        prediction_pattern = re.compile(
-            r"(\d+):\s*([\d\s\-–]+)\s*[Mm]in.*?at\s*([\d:]+[APM]+)",
-            re.IGNORECASE
-        )
-        dest_pattern = re.compile(r"[↑↓→←]?\s*([A-Z][^\n]+?)(?:\s+Last seen|Only|$)")
+        # Each prediction is in a <div class="divp"> 
+        # Limit to first 3
+        for div in soup.find_all("div", class_="divp")[:3]:
+            text = div.get_text(separator=" ", strip=True)
 
-        # Try to find the predictions block
-        body_text = soup.get_text(separator="\n")
-        for line in body_text.split("\n"):
-            line = line.strip()
-            m = prediction_pattern.search(line)
+            # Check for "At Stop"
+            if re.search(r"at\s+stop", text, re.IGNORECASE):
+                vehicle_match = re.search(r"Vehicle\s+(\d+)", text)
+                scheduled = "sched" in text.lower()
+                arrivals.append({
+                    "minutes": 0,
+                    "minutes_range": None,
+                    "time": "Now",
+                    "destination": destination,
+                    "vehicle": vehicle_match.group(1) if vehicle_match else None,
+                    "scheduled": scheduled,
+                })
+                continue
+
+            # Match "14 Min at 10:58PM" or "4 - 7 Min at 10:58PM"
+            m = re.search(r"([\d\s\-–]+)\s*[Mm]in\w*\s+at\s+([\d:]+(?:AM|PM))", text, re.IGNORECASE)
             if m:
-                index = m.group(1)
-                mins_raw = m.group(2).strip()
-                arrival_time = m.group(3)
-                scheduled = "(Sched. based)" in line
-
-                # Parse minutes — may be a range like "4 - 7"
+                mins_raw = m.group(1).strip()
+                arrival_time = m.group(2)
                 mins_parts = re.findall(r"\d+", mins_raw)
                 minutes = int(mins_parts[0]) if mins_parts else None
-
-                # Extract destination
-                dest_match = dest_pattern.search(line)
-                destination = dest_match.group(1).strip() if dest_match else ""
-
-                # Extract vehicle number
-                vehicle_match = re.search(r"Vehicle\s+(\d+)", line)
-                vehicle = vehicle_match.group(1) if vehicle_match else None
-
+                vehicle_match = re.search(r"Vehicle\s+(\d+)", text)
+                scheduled = "sched" in text.lower()
                 arrivals.append({
-                    "index": int(index),
                     "minutes": minutes,
-                    "minutes_range": mins_raw if "-" in mins_raw else None,
+                    "minutes_range": mins_raw if re.search(r"\d\s*[-–]\s*\d", mins_raw) else None,
                     "time": arrival_time,
                     "destination": destination,
-                    "vehicle": vehicle,
+                    "vehicle": vehicle_match.group(1) if vehicle_match else None,
                     "scheduled": scheduled,
                 })
 
@@ -229,5 +245,4 @@ def index():
 if __name__ == "__main__":
     os.makedirs("static", exist_ok=True)
     print("Starting DRT TransSee backend on http://localhost:5000")
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True, port=5000)

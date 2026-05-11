@@ -249,54 +249,21 @@
   function backToStops() { stopRefresh(); setBreadcrumb([`<a onclick="backToDirections()">Route ${state.route}</a>`, '<span>'+(state.direction?.label.split('→')[0].trim()||'')+'</span>']); showStops(state.direction); }
 
   // ── Arrivals ──────────────────────────────────────────────────────────────
-  async function loadArrivals(stop) {
+  function loadArrivals(stop) {
     stopRefresh(); state.currentStop = stop;
-    loading('Loading arrivals for '+stop.name+'…');
-    try {
-      const data = await apiFetch(API+'/arrivals?key='+encodeURIComponent(stop.key));
-      showArrivals(data, stop);
-      checkNotifications(data.arrivals, stop);
-      startRefresh(stop);
-    } catch(e) { setContent('<div class="err">Could not load arrivals.<br><small>'+e.message+'</small></div>'); }
-  }
-
-  function showArrivals(data, stop) {
     const favved = isFav(stop.key);
     const transseeUrl = TRANSSEE+'/predict?s='+stop.key;
     const dirShort = state.direction?.label.split('→')[0].trim()||'';
-
-    let rows = '';
-    if (!data.arrivals || !data.arrivals.length) {
-      rows = '<div class="arrival-row"><div><div class="arrival-dest">No arrivals found</div><div class="arrival-detail">Service may not be running right now</div></div></div>';
-    } else {
-      rows = data.arrivals.map(a => {
-        const mins = a.minutes ?? 0;
-        const cls = mins<=1?'t-now':mins<=5?'t-soon':mins<=15?'t-ok':'t-later';
-        const label = mins<=1?'Now':(a.minutes_range||mins)+' min';
-        const detail = [a.time?'at '+a.time:'', a.vehicle?'Bus #'+a.vehicle:''].filter(Boolean).join(' · ');
-        const badge = a.scheduled ? '<span class="badge badge-sched">Scheduled</span>' : '<span class="badge badge-live">Live</span>';
-        return '<div class="arrival-row"><div><div class="arrival-dest">'+(a.destination||dirShort)+' '+badge+'</div><div class="arrival-detail">'+detail+'</div></div><div class="arrival-time '+cls+'">'+label+'</div></div>';
-      }).join('');
-    }
-
-    let notifBanner = '';
-    if (notifPermission==='default') {
-      notifBanner = '<div class="notif-bar">🔔 Get notified when your bus is close<button onclick="requestNotifPermission()">Enable</button></div>';
-    } else if (notifPermission==='granted') {
-      notifBanner = '<div class="notif-bar">🔔 Alerts on — notifying when bus is ≤ 5 min away</div>';
-    }
-
     setContent(
       '<div class="section-label">Live arrivals</div>' +
       '<div class="card">' +
         '<div class="card-header"><div class="card-header-left"><h2>📍 '+stop.name+'</h2><p>Route '+state.route+' · '+dirShort+'</p></div>' +
         '<button class="fav-btn" onclick="handleFav()" title="'+(favved?'Remove':'Add')+' favourite">'+(favved?'⭐':'☆')+'</button></div>' +
-        rows +
-        notifBanner +
-        '<div class="progress-bar"><div class="progress-fill" id="progress" style="width:100%"></div></div>' +
-        '<div class="refresh-bar"><span id="refresh-label">Refreshes in '+REFRESH_INTERVAL+'s</span><button onclick="loadArrivals(state.currentStop)">↻ Refresh now</button></div>' +
-      '</div>' +
-      '<a class="ext-link" href="'+transseeUrl+'" target="_blank">View on transsee.ca ↗</a>'
+        '<div style="padding:16px 14px;display:flex;flex-direction:column;gap:12px;">' +
+          '<div style="font-size:13px;color:var(--text2);line-height:1.6;">Tap below to see live arrival times on TransSee.</div>' +
+          '<a href="'+transseeUrl+'" target="_blank" style="display:block;text-align:center;background:var(--accent);color:#fff;text-decoration:none;padding:12px;border-radius:var(--radius);font-size:15px;font-weight:500;">🚌 View live arrivals ↗</a>' +
+        '</div>' +
+      '</div>'
     );
   }
 
