@@ -223,7 +223,87 @@
   function pickDirection(idx) {
     const dir = state._directions[idx]; state.direction = dir;
     setBreadcrumb([`<a onclick="backToDirections()">Route ${state.route}</a>`, '<span>'+dir.label.split('→')[0].trim()+'</span>']);
-    showStops(dir);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => showStops(dir, pos.coords.latitude, pos.coords.longitude),
+        ()  => showStops(dir, null, null),
+        { timeout: 4000, enableHighAccuracy: false }
+      );
+    } else {
+      showStops(dir, null, null);
+    }
+  }
+
+  function backToDirections() { stopRefresh(); state.direction = null; setBreadcrumb([`<span>Route ${state.route}</span>`]); showDirections({directions: state._directions}); }
+
+  // ── Stops ─────────────────────────────────────────────────────────────────
+  // Haversine distance in metres between two lat/lon points
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const dLat = (lat2-lat1)*Math.PI/180;
+    const dLon = (lon2-lon1)*Math.PI/180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function showStops(dir, userLat, userLon) {
+    state._stops = dir.stops;
+
+    // Find nearest stop index if we have user location and stop coords
+    let nearestIdx = -1;
+    let nearestDist = Infinity;
+    if (userLat != null && userLon != null) {
+      dir.stops.forEach((s, i) => {
+        if (s.lat && s.lon) {
+          const d = haversine(userLat, userLon, s.lat, s.lon);
+          if (d < nearestDist) { nearestDist = d; nearestIdx = i; }
+        }
+      });
+    }
+
+    const items = dir.stops.map((s, i) => {
+      const isNearest = i === nearestIdx;
+      const nearTag = isNearest
+        ? '<span style="font-size:11px;font-weight:600;color:var(--accent);margin-left:6px;background:var(--accent-bg);padding:2px 6px;border-radius:99px;">📍 Nearest</span>'
+        : '';
+      const style = isNearest ? 'font-weight:700;' : '';
+      return '<div class="list-item" id="stop-item-'+i+'" onclick="pickStop('+i+')">' +
+        '<div class="list-item-name" style="'+style+'">'+s.name+nearTag+'</div>' +
+        '<div class="list-item-arrow">›</div>' +
+        '</div>';
+    }).join('');
+
+    const locationNote = nearestIdx >= 0
+      ? '<p style="font-size:11px;color:var(--text3);padding:8px 14px 0;">Nearest stop highlighted based on your location</p>'
+      : '';
+
+    setContent('<div class="section-label">Choose stop</div><div class="card">' +
+      '<div class="card-header"><div class="card-header-left"><h2>'+dir.label+'</h2><p>'+dir.stops.length+' stops</p></div></div>' +
+      locationNote +
+      items+'</div>');
+
+    // Scroll nearest stop into view
+    if (nearestIdx >= 0) {
+      setTimeout(() => {
+        const el = document.getElementById('stop-item-'+nearestIdx);
+        if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 100);
+    }
+  }
+
+  function pickDirection(idx) {
+    const dir = state._directions[idx]; state.direction = dir;
+    setBreadcrumb([`<a onclick="backToDirections()">Route ${state.route}</a>`, '<span>'+dir.label.split('→')[0].trim()+'</span>']);
+    // Try to get user location before showing stops
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => showStops(dir, pos.coords.latitude, pos.coords.longitude),
+        ()  => showStops(dir, null, null),
+        { timeout: 3000 }
+      );
+    } else {
+      showStops(dir, null, null);
+    }
   }
 
   function backToDirections() { stopRefresh(); state.direction = null; setBreadcrumb([`<span>Route ${state.route}</span>`]); showDirections({directions: state._directions}); }
@@ -246,7 +326,7 @@
     loadArrivals(stop);
   }
 
-  function backToStops() { stopRefresh(); setBreadcrumb([`<a onclick="backToDirections()">Route ${state.route}</a>`, '<span>'+(state.direction?.label.split('→')[0].trim()||'')+'</span>']); showStops(state.direction); }
+  function backToStops() { stopRefresh(); setBreadcrumb([`<a onclick="backToDirections()">Route ${state.route}</a>`, '<span>'+(state.direction?.label.split('→')[0].trim()||'')+'</span>']); showStops(state.direction, null, null); }
 
   // ── Arrivals ──────────────────────────────────────────────────────────────
   function loadArrivals(stop) {
