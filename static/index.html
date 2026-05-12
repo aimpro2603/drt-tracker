@@ -223,14 +223,17 @@
   function pickDirection(idx) {
     const dir = state._directions[idx]; state.direction = dir;
     setBreadcrumb([`<a onclick="backToDirections()">Route ${state.route}</a>`, '<span>'+dir.label.split('→')[0].trim()+'</span>']);
+    // Show stops immediately, then re-render with nearest highlighted once GPS resolves
+    showStops(dir, null, null);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        pos => showStops(dir, pos.coords.latitude, pos.coords.longitude),
-        ()  => showStops(dir, null, null),
-        { timeout: 4000, enableHighAccuracy: false }
+        pos => {
+          // Re-render stop list with GPS coordinates
+          showStops(dir, pos.coords.latitude, pos.coords.longitude);
+        },
+        () => {}, // already showing without highlight
+        { timeout: 5000, enableHighAccuracy: false }
       );
-    } else {
-      showStops(dir, null, null);
     }
   }
 
