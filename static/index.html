@@ -312,16 +312,6 @@
   function backToDirections() { stopRefresh(); state.direction = null; setBreadcrumb([`<span>Route ${state.route}</span>`]); showDirections({directions: state._directions}); }
 
   // ── Stops ─────────────────────────────────────────────────────────────────
-  function showStops(dir) {
-    state._stops = dir.stops;
-    const items = dir.stops.map((s,i) =>
-      '<div class="list-item" onclick="pickStop('+i+')"><div class="list-item-name">'+s.name+'</div><div class="list-item-arrow">›</div></div>'
-    ).join('');
-    setContent('<div class="section-label">Choose stop</div><div class="card">' +
-      '<div class="card-header"><div class="card-header-left"><h2>'+dir.label+'</h2><p>'+dir.stops.length+' stops</p></div></div>' +
-      items+'</div>');
-  }
-
   function pickStop(idx) {
     const stop = state._stops[idx]; state.currentStop = stop;
     const d = state.direction?.label.split('→')[0].trim()||'';
