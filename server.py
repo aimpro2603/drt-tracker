@@ -138,10 +138,10 @@ def get_stops(route):
             first_th = dir_table.find("th")
             if first_th:
                 raw = first_th.get_text(strip=True)
-                if "↑" in raw:   arrow, dir_word = "↑", "Northbound"
-                elif "↓" in raw: arrow, dir_word = "↓", "Southbound"
-                elif "→" in raw: arrow, dir_word = "→", "Eastbound"
-                elif "←" in raw: arrow, dir_word = "←", "Westbound"
+                if "↑" in raw:   arrow, dir_word = "↑", "Northbound 北"
+                elif "↓" in raw: arrow, dir_word = "↓", "Southbound 南"
+                elif "→" in raw: arrow, dir_word = "→", "Eastbound 东"
+                elif "←" in raw: arrow, dir_word = "←", "Westbound 西"
                 else:             arrow, dir_word = "", "Direction"
                 clean = raw.replace("↑","").replace("↓","").replace("→","").replace("←","").strip()
                 label = f"{dir_word} → {clean}" if clean else dir_word
