@@ -266,8 +266,10 @@
 
     const items = dir.stops.map((s, i) => {
       const isNearest = i === nearestIdx;
+      const nearDist = isNearest ? Math.round(haversine(userLat, userLon, s.lat, s.lon)) : 0;
+      const nearDistStr = nearDist >= 1000 ? (nearDist/1000).toFixed(1)+' km' : nearDist+' m';
       const nearTag = isNearest
-        ? '<span style="font-size:11px;font-weight:600;color:var(--accent);margin-left:6px;background:var(--accent-bg);padding:2px 6px;border-radius:99px;">📍 Nearest</span>'
+        ? '<span style="font-size:11px;font-weight:600;color:var(--accent);margin-left:6px;background:var(--accent-bg);padding:2px 6px;border-radius:99px;">📍 Nearest · '+nearDistStr+'</span>'
         : '';
       const style = isNearest ? 'font-weight:700;' : '';
       return '<div class="list-item" id="stop-item-'+i+'" onclick="pickStop('+i+')">' +
